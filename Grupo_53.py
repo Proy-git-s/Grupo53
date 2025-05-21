@@ -4,6 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import plotly.express as px
 import numpy as np
+from matplotlib import cm
 
 # Configuración inicial
 st.set_page_config(page_title="Análisis de Supermercado - Myanmar", layout="wide", initial_sidebar_state='expanded')
@@ -231,18 +232,34 @@ with col6:
     st.plotly_chart(fig6)
     st.write("*Muestra la frecuencia de uso de los distintos métodos de pago, lo que permite identificar cuál es el más utilizado y detectar posibles preferencias entre los clientes.*")
 
-# Quinta fila
-st.subheader("Ingreso Bruto por Sucursal y Línea de Producto")
-sunburst_df = df_filtered.groupby(['Branch', 'Product line'])['gross income'].sum().reset_index()
-fig8 = px.sunburst(sunburst_df, path=['Branch', 'Product line'], values='gross income',  labels={"Branch": "Sucursal", "gross income": "Ingreso bruto", "Product line": "Línea de Producto"}, color_discrete_sequence=custom_palette)
-# Ajustar tamaño de la figura
-fig8.update_layout(width=800, height=800)  
-# Mostrar en Streamlit
-st.plotly_chart(fig8)
-st.write("*Presenta el ingreso bruto generado por cada línea de producto en cada sucursal, facilitando la comparación entre tiendas y el análisis del aporte individual de cada categoría al total de ingresos.*")
+# Crear columnas (Quinta fila)
+col7, col8 = st.columns(2)
+with col7:
+    st.subheader("Ingreso Bruto por Sucursal y Línea de Producto")
+    sunburst_df = df_filtered.groupby(['Branch', 'Product line'])['gross income'].sum().reset_index()
+    fig7 = px.sunburst(sunburst_df, path=['Branch', 'Product line'], values='gross income',  labels={"Branch": "Sucursal", "gross income": "Ingreso bruto", "Product line": "Línea de Producto"}, color_discrete_sequence=custom_palette)
+    # Ajustar tamaño de la figura
+    fig7.update_layout(width=800, height=800)  
+    # Mostrar en Streamlit
+    st.plotly_chart(fig7)
+    st.write("*Presenta el ingreso bruto generado por cada línea de producto en cada sucursal, facilitando la comparación entre tiendas y el análisis del aporte individual de cada categoría al total de ingresos.*")
 
+with col8:
+    st.subheader("Relación entre Costo, Ganancia Bruta y Precio Unitario")
+    fig8 = plt.figure()
+    ax8 = fig8.add_subplot(111, projection='3d')
+    scatter = ax8.scatter(df_filtered["cogs"], df_filtered["gross income"], df_filtered["Unit price"],
+                           c=df_filtered["Rating"], cmap="Blues")
+    ax8.set_xlabel("Costo",fontsize=10)
+    ax8.set_ylabel("Ganancia Bruta", fontsize=10)
+    ax8.set_zlabel("Precio Unitario", fontsize=10)
+    ax8.zaxis.labelpad = -15  # Label a la izquierda
+    fig8.patch.set_facecolor('none') # Fondo transparente de la figura
+    ax8.set_facecolor('none')  # Fondo transparente del área del gráfico
+    st.pyplot(fig8)
+    st.write("*Visualiza la relación entre el costo, la ganancia bruta y el precio unitario, permitiendo una evaluación más estratégica de la política de precios y de la eficiencia en la generación de utilidades, facilitando la toma de decisiones informadas sobre ajustes en costos, precios o foco comercial.*")
 
 # Pie de página
 st.markdown("---")
-st.caption("Análisis de Datos de una Cadena de Supermercados | Datos: data.csv | Grupo:53")
+st.caption("Análisis de Datos de una Cadena de Supermercados | Datos: data.csv | Grupo: 53")
 
